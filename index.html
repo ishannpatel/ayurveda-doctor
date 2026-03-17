@@ -20,6 +20,14 @@
   textarea,input{font-family:inherit}
   button{transition:opacity 0.15s}
   button:hover{opacity:0.85}
+  @media(max-width:600px){
+    h1{font-size:22px!important}
+    h2{font-size:18px!important}
+    h3{font-size:15px!important}
+    .hero-btn{padding:12px 24px!important;font-size:14px!important}
+    .page-pad{padding:16px 12px!important}
+    .grid-2{grid-template-columns:1fr!important}
+  }
 </style>
 </head>
 <body>
@@ -97,14 +105,16 @@ const DI = {
 
 async function callClaude(messages, system) {
   try {
-    const r = await fetch("https://api.anthropic.com/v1/messages", {
+    const r = await fetch("https://ayurveda-doctor.onrender.com/api/chat", {
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system,messages})
+      body:JSON.stringify({system,messages})
     });
     const d = await r.json();
     return d.content?.[0]?.text || "Sorry, could not get a response.";
-  } catch(e) { return "Network error. Please try again."; }
+  } catch(e) {
+    return "⚠️ Could not reach the server. Please try again in a moment — Render free tier may be waking up (takes ~30 seconds). 🌿";
+  }
 }
 
 const Badge = ({label,color}) => (
