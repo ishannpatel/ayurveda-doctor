@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 
 app.post("/api/chat", async (req, res) => {
@@ -17,17 +17,26 @@ app.post("/api/chat", async (req, res) => {
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
+        model: "claude-haiku-4-5-20251001",
         max_tokens: 1000,
-        system,
-        messages,
+        system: system || "You are a helpful Ayurvedic health guide.",
+        messages: messages,
       }),
     });
 
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error("Anthropic API error:", errText);
+      return res.status(500).json({ error: errText });
+    }
+
     const data = await response.json();
+    console.log("Response:", JSON.stringify(data).slice(0, 200));
     res.json(data);
+
   } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    console.error("Server error:", err.message);
+    res.status(500).json({ error: err.message });
   }
 });
 
